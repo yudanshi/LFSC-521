@@ -1,0 +1,69 @@
+---
+title: "LFSC_521_R assignment"
+author: "Yudan Shi"
+date: "2022/2/6"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+* I'll use data from the **nycflights13** package, which is the dataset on flights departing New York City in 2013.
+
+* Analyze the data using the **tidyverse** package, involving *split-apply-combine approach*, and using **ggplot2** to visualize the data.
+
+* Since flight delays usually have a chain reaction, i.e., even if the initial problem that caused the delay has been resolved, the already delayed preceding flight could cause the following flight to be delayed as well. 
+
+* Therefore, I will analyze the relationship between the delay time of previous fights and of the subsequent flights.
+
+## Install and Library
+
+```{r Install and library, message=FALSE, warning=FALSE}
+# install.packages("tidyverse")
+# install.packages("nycflights13")
+
+library(tidyverse)
+library(nycflights13) # Import the dataset
+library(ggplot2)
+```
+
+
+## Analysis and Results
+
+Firstly, I'll calculate the departure delay of the preceding flight from the same airport using `lag()` function based on the same *origin*.
+
+```{r}
+(lagged_delays <- flights %>% 
+  arrange(origin, month, day, dep_time) %>%
+  group_by(origin) %>%
+  mutate(dep_delay_lag = lag(dep_delay)) %>%
+  filter(!is.na(dep_delay),!is.na(dep_delay_lag))) ## remove rows including NA values
+```
+
+Then, grouped by delay time of the preceding flight, I'll calculate the average delay time of the subsequent flights. 
+
+And then make a plot to visualize the relationship.
+
+```{r}
+lagged_delays %>%
+  group_by(dep_delay_lag) %>%
+  summarise(dep_delay_mean = mean(dep_delay)) %>%
+  ggplot(aes(y = dep_delay_mean, x = dep_delay_lag)) +
+  geom_point() +
+  scale_x_continuous(breaks = seq(0, 1500, by = 120)) +
+  labs(y = "Departure Delay (min)", x = "Previous Departure Delay (min)") + 
+  theme_classic()
+```
+
+## Discussion
+
+The plot shows the relationship between the mean delay of a flight and delay of the preceding flight. 
+
+For delays less than two hours, the relationship between the delay of the preceding flight and the current flight is nearly a line. 
+
+After that the relationship becomes more variable, as long-delayed flights are interspersed with flights leaving on-time. 
+
+After about 8-hours, a delayed flight is likely to be followed by a flight leaving on time.
