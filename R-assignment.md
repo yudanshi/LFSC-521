@@ -79,7 +79,6 @@ lagged_delays %>%
   theme_classic()
 ```
 
-![](D:/1_shi_yudan/1_UTKPHD/2022 Spring/LFSC_521_2022/R-assignment_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 ![unnamed-chunk-2-1](https://user-images.githubusercontent.com/99147879/152708023-322aab7a-03c8-4347-9942-bd0f6a860b3f.png)
 
 ## Discussion
